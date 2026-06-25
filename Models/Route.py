@@ -8,17 +8,17 @@ class Route:
     default_dep_time = datetime.combine(datetime.now().date() + timedelta(1), time(hour=6))
     default_speed = 87 
     
-    def __init__(self, id: int, distance: list, timedelta, departure_time, truck, capacity_per_stop,stops):
+    def __init__(self, id: int, distance: list, time_delta, departure_time, truck, capacity_per_stop,stops):
         self.id = id 
         self.distance = distance 
 
         if departure_time:
             self.departure_time = departure_time
         else:
-            if timedelta:
+            if time_delta:
                 self.departure_time = Route.default_dep_time
             else:
-                self.departure_time = add_days_to_now(timedelta)
+                self.departure_time = add_days_to_now(time_delta)
         self.stops = stops 
         self.truck = truck 
         self.delivery_weight_per_stop = capacity_per_stop 

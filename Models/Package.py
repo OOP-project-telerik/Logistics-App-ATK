@@ -12,7 +12,7 @@ class Package:
             raise ValueError(f'End location must be precisely 3 letters')
         self._end_location = end_location
        
-        if float(weight) <= 42000:
+        if float(weight) > 42000:
             raise ValueError(f'Weight exceeds maximum limit of 42000 kg')
         if float(weight) <= 0:
             raise ValueError(f'Weight must be a positive number')
