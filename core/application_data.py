@@ -1,8 +1,3 @@
-from Models.Customer import *
-from Models.Package import *
-from Models.Route import *
-from Models.Truck import *
-
 class ApplicationData:
     def __init__(self):
         self._trucks = []
@@ -51,6 +46,22 @@ class ApplicationData:
     def find_unassigned_packages(self):
         unassigned_packages = [package for package in self._packages if not package._is_assigned]
         return unassigned_packages
+
+    def find_routes_for_package(self, package):
+        suitable_routes = []
+        for route in self._routes:
+            if package.start_location in route.stops and package.end_location in route.stops:
+                if route.stops.index(package.start_location) < route.stops.index(package.end_location):
+                    suitable_routes.append(route)
+        return suitable_routes
+
+    def find_free_truck(self, route):
+        for truck in self._trucks:
+            if truck.km_range >= route.total_distance and truck.capacity >= sum(route.delivery_weight_per_stop):
+                if all(truck != r.truck for r in self._routes):
+                    return truck
+        return None
+
 
 
 
