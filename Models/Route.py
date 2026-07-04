@@ -6,11 +6,11 @@ def add_days_to_now(d):
 
 class Route:
     default_dep_time = datetime.combine(datetime.now().date() + timedelta(1), time(hour=6))
-    default_speed = 87 
+    DEFAULT_SPEED = 87 
     
     def __init__(self, id: int, distance: list, time_delta, departure_time, truck, capacity_per_stop,stops):
         self.id = id 
-        self.distance = distance 
+        self.distances = distance 
 
         if departure_time:
             self.departure_time = departure_time
@@ -25,29 +25,30 @@ class Route:
 
     @property
     def total_distance(self):
-        return sum(self.distance) 
+        return sum(self.distances) 
     
     @property 
     def arrival_time(self):
-        time_to_travel_min = int((self.total_distance / Route.default_speed) * 60)
+        time_to_travel_min = int((self.total_distance / Route.DEFAULT_SPEED) * 60)
         return self.departure_time + timedelta(minutes = time_to_travel_min)
     
-    def find_arrival_t(self): 
+    def find_arrival_times(self): 
         time_slot = [self.departure_time]
         current_slot = self.departure_time
 
-        for d in self.distance: 
-            total_time_distance_min = int((d / Route.default_speed) * 60) 
+        for d in self.distances: 
+            total_time_distance_min = int((d / Route.DEFAULT_SPEED) * 60) 
             arrival_time = current_slot + timedelta(minutes = total_time_distance_min)
             time_slot.append(arrival_time)
             current_slot = arrival_time
 
         return time_slot
-    def find_arrival_t_per_stop(self, stop: str):
+
+    def get_arrival_time_for_stop(self, stop: str):
         if stop not in self.stops:
             return None  
         idx = self.stops.index(stop)
-        return self.custom_strftime("%b {S} %H:%Mh", self.find_arrival_t()[idx])
+        return self.custom_strftime("%b {S} %H:%Mh", self.find_arrival_times()[idx])
 
     def get_capacity(self, start_location: str, end_location: str, package_weight):
         start_index = self.stops.index(start_location)
@@ -59,23 +60,29 @@ class Route:
         
         enough_capacity = not any(
         
-        package_weight > route_capacity[i] for i in range(start_index, end_index))
+        package_weight > route_capacity[i] for i in range(start_index, len(self.stops)))
         if not enough_capacity:
             return None 
         
         route_capacity = [
-        r - package_weight if start_index <= i < end_index else r
+        r - package_weight if i >= start_index else r
         for i, r in enumerate(route_capacity)]
         
         self.delivery_weight_per_stop = [
-        w + package_weight if start_index <= i < end_index else w
+        w + package_weight if i >= start_index else w
         for i, w in enumerate(self.delivery_weight_per_stop)] 
 
         return route_capacity 
     
-    def get_next_stop(self): 
+    def get_next_stop(self):
+        if not self.stops:
+            raise ValueError('No stops available on this route')
+        slots = self.find_arrival_times()
+        return self.find_next_stop_and_arrival_time(datetime.now(), slots)
+
+    def remove_stop(self):
         self.stops.pop()
-        self.distance.pop()
+        self.distances.pop()
 
     @staticmethod
     def custom_strftime(format_string: str, t) -> str:
@@ -92,6 +99,6 @@ class Route:
     def __str__(self) -> str:
         route_id = f'ID: [{self.id}] '
         result = [f'{x} ({self.custom_strftime("%b {S} %H:%Mh", y)} delivery weight: {z}kg)'
-        for x, y, z in zip(self.stops, self.find_arrival_t(), self.delivery_weight_per_stop)]
+        for x, y, z in zip(self.stops, self.find_arrival_times(), self.delivery_weight_per_stop)]
         
         return route_id + ' → '.join(result)

@@ -37,13 +37,23 @@ class Package:
     @property
     def weight(self):
         return self._weight
+    @property
+    def customer_info(self):
+        return self._customer
+    @property
+    def is_assigned(self):
+        return self._is_assigned
+    @property
+    def connected_route(self):
+        return self._connected_route
     
     def __str__(self):
-        customer_info = str(self._customer).replace('\n', '\n   ')
-        return (f'---Package info:\n---' \
-                f'ID: {self.id}\n' \
-                f'Start Location: {self.start_location}\n' \
-                f'End Location: {self.end_location}\n' \
-                f'Weight: {self.weight} kg\n' \
-                f'---Customer info:\n---   ' \
-                f'Customer: {customer_info}')
+        customer_info = str(self._customer).replace('\n', '\n    ')
+        return (
+        f'---Package info: ---\n'
+        f'   #Package ID: [{self.id}]\n'
+        f'   #Package start location: {self.start_location}\n'
+        f'   #Package end location: {self.end_location}\n'
+        f'   #Package weight: {self.weight}kg\n'
+        f'   ---Customer info: ---\n'
+        f'      {customer_info}')
