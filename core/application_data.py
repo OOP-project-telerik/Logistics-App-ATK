@@ -44,7 +44,7 @@ class ApplicationData:
         raise ValueError(f'Route with id: {route_id} not found. Try again with a different id!')
 
     def find_unassigned_packages(self):
-        unassigned_packages = [package for package in self._packages if not package._is_assigned]
+        unassigned_packages = [package for package in self._packages if not package.is_assigned]
         return unassigned_packages
 
     def find_routes_for_package(self, package):
