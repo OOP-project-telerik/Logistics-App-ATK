@@ -20,5 +20,5 @@ class Engine:
 
     def _process_command(self, input_line):
         cmd_name, *params = input_line.split()
-
-        return self._command_factory.create(cmd_name).execute(params)
+        command = self._command_factory.create(cmd_name, params)
+        return command.execute()

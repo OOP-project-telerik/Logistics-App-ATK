@@ -14,7 +14,7 @@ class CreatePackage(BaseCommand):
         last_name = self._params[4]
         email = self._params[5]
         phone_number = self._params[6]
-        address = self._params[7]
+        address = ' '.join(self._params[7:])
 
         id = len(self._app_data.packages) + 1
         customer = Customer(first_name, last_name, email, phone_number, address)
